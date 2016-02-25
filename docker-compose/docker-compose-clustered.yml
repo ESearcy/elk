@@ -1,0 +1,76 @@
+elasticsearch:
+  container_name: elasticsearch
+  image: thinkbig/elasticsearch:1.7.1-v1
+  ports:
+    - "9200:9200"
+    - "9300:9300"
+  volumes_from:
+    - elasticsearch_data
+elasticsearch2:
+  container_name: elasticsearch2
+  image: thinkbig/elasticsearch:1.7.1-v1
+  ports:
+    - "9201:9200"
+    - "9301:9300"
+  volumes_from:
+    - elasticsearch_data2
+elasticsearch3:
+  container_name: elasticsearch3
+  image: thinkbig/elasticsearch:1.7.1-v1
+  ports:
+    - "9202:9200"
+    - "9302:9300"
+  volumes_from:
+    - elasticsearch_data3
+logstash:
+  container_name: logstash
+  image: thinkbig/logstash:1.5.4-v1
+  command: logstash -f /etc/logstash/conf.d/logstash.conf
+  volumes:
+    - ./logstash/config:/etc/logstash/conf.d
+    - ./logstash/certs/local-dev/logstash-forwarder.crt:/opt/logstash-forwarder/logstash-forwarder.crt
+    - ./logstash/certs/local-dev/logstash-forwarder.key:/opt/logstash-forwarder/logstash-forwarder.key
+  ports:
+    - "5000:5000"
+    - "5043:5043"
+  links:
+    - elasticsearch
+logspout:
+  container_name: logspout
+  image: gliderlabs/logspout
+#  environment:
+#    DEBUG: true
+  volumes:
+    - /var/run/docker.sock:/tmp/docker.sock
+  links:
+    - logstash
+  command: syslog://logstash:5000
+kibana:
+  container_name: kibana
+  image: thinkbig/kibana:4.1.1-v1
+  volumes:
+    - ./kibana/config:/opt/kibana/config
+  #ports:
+  #  - "5601:5601"
+  links:
+    - elasticsearch
+cadvisor:
+  container_name: cadvisor
+  image: google/cadvisor:latest
+  volumes:
+    - /:/rootfs:ro
+    - /var/run:/var/run:rw
+    - /sys:/sys:ro
+    - /var/lib/docker/:/var/lib/docker:ro
+  ports:
+    - "8080:8080"
+nginx:
+  container_name: nginx
+  image: nginx:latest
+  volumes:
+    - ./nginx/config/nginx.conf:/etc/nginx/nginx.conf
+    - ./nginx/config/.htpasswd:/etc/nginx/.htpasswd
+  ports:
+    - "80:80"
+  links:
+    - kibana

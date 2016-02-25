@@ -1,0 +1,1 @@
+Add instructions on how to install file beats on the client servers

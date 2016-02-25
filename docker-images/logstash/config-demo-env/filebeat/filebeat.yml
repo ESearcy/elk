@@ -1,0 +1,64 @@
+filebeat:
+  prospectors:
+    -
+      paths:
+        - "/var/log/pipeline-application/pipeline-application.log"
+      document_type: pipeline-application
+    -
+      paths:
+        - "/var/log/pipeline-controller-data-admin.log"
+      document_type: pipeline-application-data-admin
+    -
+      paths:
+        - "/var/log/hive/hiveserver2.log"
+      document_type: hiveserver2
+    -
+      paths:
+        - "/var/log/hive/hivemetastore.log"
+      document_type: hivemetastore
+    -
+      paths:
+        - "/var/log/webhcat/webhcat.log"
+      document_type: webhcat
+    -
+      paths:
+        - "/var/log/knox/gateway.log"
+        - "/var/log/knox/gateway.err"
+        - "/var/log/knox/knoxcli.log"
+        - "/var/log/knox/ldap.log"
+      document_type: knox
+      fields:
+        subtype: main
+      fields_under_root: true
+    -
+      paths:
+        - "/var/log/knox/gateway-audit.log"
+      document_type: knox
+      fields:
+        subtype: gateway-audit
+      fields_under_root: true
+    -
+      paths:
+        - "/var/log/zookeeper/zookeeper.out"
+      document_type: zookeeper
+output:
+  logstash:
+    hosts: ["ec2-52-25-110-85.us-west-2.compute.amazonaws.com:5044"]
+    # index configures '@metadata.beat' field to be used by Logstash for
+    # indexing. The default index name depends on the each beat.
+    # For Packetbeat, the default is set to packetbeat, for Topbeat to
+    # topbeat and for Filebeat to filebeat.
+    index: logstash
+logging:
+  level: info
+
+  # enable file rotation with default configuration
+  to_files: true
+
+  # do not log to syslog
+  to_syslog: false
+
+  files:
+    path: /var/log/filebeat
+    name: mybeat.log
+    keepfiles: 7

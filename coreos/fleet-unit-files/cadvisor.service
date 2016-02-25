@@ -1,0 +1,17 @@
+[Unit]
+Description=cadvisor
+
+[Service]
+Restart=always
+ExecStart=/usr/bin/docker run --rm   --volume=/:/rootfs:ro \
+                                     --volume=/var/run:/var/run:rw \
+                                     --volume=/sys:/sys:ro \
+                                     --volume=/var/lib/docker/:/var/lib/docker:ro \
+                                     --publish=8080:8080 \
+                                     --detach=true \
+                                     --name=cadvisor \
+                                     google/cadvisor:latest
+ExecStop=/usr/bin/docker kill cadvisor
+
+[X-Fleet]
+X-Conflicts=cadvisor.service

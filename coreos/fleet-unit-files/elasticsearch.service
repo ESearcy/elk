@@ -1,0 +1,15 @@
+[Unit]
+Description=elasticsearch
+
+[Service]
+Restart=always
+ExecStart=/usr/bin/docker run --rm \
+                               -p 9200:9200 \
+                               --volumes-from elasticsearch-data \
+                               -e ES_HEAP_SIZE='2g'  \
+                               --name elasticsearch \
+                               thinkbig/elasticsearch:2.1.0
+ExecStop=/usr/bin/docker kill elasticsearch
+
+[X-Fleet]
+X-Conflicts=elasticsearch.service

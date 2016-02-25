@@ -1,0 +1,10 @@
+[Unit]
+Description=kibana
+
+[Service]
+Restart=always
+ExecStart=/usr/bin/docker run --rm --name kibana -p 5601:5601 --link elasticsearch:elasticsearch thinkbig/kibana:4.3.0
+ExecStop=/usr/bin/docker kill kibana
+
+[X-Fleet]
+X-Conflicts=kibana.service

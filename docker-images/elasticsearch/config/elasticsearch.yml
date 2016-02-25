@@ -1,0 +1,5 @@
+network.host: 0.0.0.0
+path:
+  data: /data
+cluster:
+  name: demo-cluster
